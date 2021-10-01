@@ -71,3 +71,25 @@ async def signup(user: SignUp):
     return new_user
 
 
+@auth.post('/login', status_code=status.HTTP_200_OK)
+async def login(user: LoginModel, Authorize : AuthJWT = Depends()):
+
+    db_user = session.query(User).filter(User.username == user.username)
+
+    if db_user and check_password_hash(db_user.password, user.password):
+        access_token = Authorize.create_access_token(subject=db_user.username)
+        refresh_token = Authorize.create_refresh_token(subject=db_user.username)
+
+        response = {
+            'access': access_token,
+            'refresh': refresh_token
+        }
+
+        return jsonable_encoder(response)
+
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                        detail='Invalid Username Or Password')
+
+
+
+
