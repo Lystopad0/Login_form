@@ -91,7 +91,7 @@ async def login(user: LoginModel, Authorize : AuthJWT = Depends()):
                         detail='Invalid Username Or Password')
 
 
-@auth_router.get('/refresh')
+@auth.get('/refresh')
 async def refresh_token(Authorize: AuthJWT = Depends()):
     """
     ## Create a fresh token
