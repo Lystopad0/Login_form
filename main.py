@@ -29,14 +29,17 @@ def custom_openapi():
                            "where JWT is the access token"
                        }
     }
+
+    # Get all routes where jwt_optional() or jwt_required
     api_router = [route for route in app.routes if isinstance(route, APIRoute)]
 
     for route in api_router:
-        path = getattr(route, 'path')
-        endpoint = getattr(route, 'endpoint')
-        methods = [method.lower() for method in getattr(route, 'methods')]
+        path = getattr(route, "path")
+        endpoint = getattr(route, "endpoint")
+        methods = [method.lower() for method in getattr(route, "methods")]
 
         for method in methods:
+            # access_token
             if (
                     re.search("jwt_required", inspect.getsource(endpoint)) or
                     re.search("fresh_jwt_required", inspect.getsource(endpoint)) or
@@ -48,10 +51,11 @@ def custom_openapi():
                     }
                 ]
 
-            app.openapi_schema = openapi_schema
-            return app.openapi_schema
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
 
-        app.openapi = custom_openapi
+
+app.openapi = custom_openapi
 
 
 @AuthJWT.load_config
